@@ -1,0 +1,24 @@
+.container {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px black solid;
+}
+
+.subcontainer {
+    display: flex;
+    flex-direction: column;
+    margin-right: 10px;
+    padding-right: 10px;
+    max-width: 200px;
+}
+
+.file {
+    cursor: pointer;
+    color:blue;
+}
+
+.editable {
+    color: red;
+}
+
+

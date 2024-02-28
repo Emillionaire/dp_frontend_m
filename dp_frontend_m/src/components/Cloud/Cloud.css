@@ -1,0 +1,15 @@
+.workspace {
+    display: flex;
+    border: 1px black solid;
+    min-height: 85vh;
+}
+
+.add_file_block {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    border-top: 1px black solid;
+    height: 5%;
+}
