@@ -72,7 +72,7 @@ export default function RegistrationPage() {
 
   return (
     <div>
-        Registration form
+        <div>Registration form:</div>
         <form onSubmit={handleSubmit}>
             <div>
                 <label htmlFor='login'>Login: </label>
@@ -89,7 +89,7 @@ export default function RegistrationPage() {
                 <input type="password" id='password' name='password' value={form.password} onChange={handleInputChange}/>
                 {validationPassword && <p>{validationPassword}</p>}
             </div>
-            <button type='submit'>Submit</button>
+            <div><button type='submit'>Submit</button></div>
         </form>
     </div>
   )

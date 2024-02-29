@@ -89,7 +89,7 @@ export default function CloudPage() {
                 <button onClick={handleCancel}>Cancel</button>
                 <button>Save</button>
                 <input type="file" onChange={handleInputFile}/>
-                <input type="text" onChange={handleInputDescription} id='description' name='description' value={description}/>
+                <input type="text" onChange={handleInputDescription} id='description' name='description' value={description} placeholder='Описание файла...'/>
             </form>
         </div>
     )

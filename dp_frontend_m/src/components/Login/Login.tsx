@@ -2,6 +2,7 @@ import { useState } from "react";
 import { AuthForm } from "./LoginTypes";
 import { Link, useNavigate } from "react-router-dom";
 import backendUrl from "../../url";
+import './Login.css';
 
 const Login = () => {
     // States
@@ -51,8 +52,8 @@ const Login = () => {
                 <label htmlFor='password'>Password</label>
                 <input type="password" id='password' name='password' value={form.password} onChange={handleInputChange}/>
             </div>
-            <button type='submit'>Log in</button>
-            <Link to={'registration/'}><button>Sign Up</button></Link>
+            <div><button type='submit'>Log in</button></div>
+            <div><Link to={'registration/'}><button>Sign Up</button></Link></div>
         </form>
     </div>
   )

@@ -18,7 +18,5 @@
 }
 
 .editable {
-    color: red;
+    background-color: rgb(0, 255, 0);
 }
-
-
