@@ -86,10 +86,10 @@ export default function CloudPage() {
     const add_on = (
         <div className='add_file_block'>
              <form onSubmit={handleSubmit}>
-                <button onClick={handleCancel}>Cancel</button>
-                <button>Save</button>
                 <input type="file" onChange={handleInputFile}/>
                 <input type="text" onChange={handleInputDescription} id='description' name='description' value={description} placeholder='Описание файла...'/>
+                <button onClick={handleCancel}>Cancel</button>
+                <button>Save file</button>
             </form>
         </div>
     )
@@ -100,7 +100,7 @@ export default function CloudPage() {
                 <div>
                     <div>
                         Your user ID: {token.user_id}<br/>
-                        Your name: {localStorage.getItem('username')}<br/>
+                        Your username: {localStorage.getItem('username')}<br/>
                         <button onClick={handleLogout}>Logout</button>
                     </div>
                     {add ? add_on : add_off}

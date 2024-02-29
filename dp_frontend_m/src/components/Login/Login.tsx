@@ -45,15 +45,14 @@ const Login = () => {
         <div>If you already have account - log in, please.</div>
         <form onSubmit={handleSubmit}>
             <div>
-                <label htmlFor='login'>Login</label>
+                <label htmlFor='login'>Login: </label>
                 <input type="login" id='username' name='username' value={form.username} onChange={handleInputChange}/>
             </div>
             <div>
-                <label htmlFor='password'>Password</label>
+                <label htmlFor='password'>Password: </label>
                 <input type="password" id='password' name='password' value={form.password} onChange={handleInputChange}/>
             </div>
-            <div><button type='submit'>Log in</button></div>
-            <div><Link to={'registration/'}><button>Sign Up</button></Link></div>
+            <div><button type='submit'>Log in</button><Link to={'registration/'}><button>Sign up</button></Link></div>
         </form>
     </div>
   )

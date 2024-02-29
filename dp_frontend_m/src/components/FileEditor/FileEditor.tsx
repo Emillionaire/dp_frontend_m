@@ -69,7 +69,7 @@ export default function FileEditor({data}: IProps) {
 
         unsecuredCopyToClipboard(`${backendUrl}api/v1/files/freefile/${data.id}`)
         // navigator.clipboard.writeText(`${backendUrl}api/v1/files/freefile/${data.id}`)
-        alert(`Link in your clipboard! Use ctrl + v. \nYour link: ${backendUrl}api/v1/files/freefile/${data.id}`)
+        alert(`Link send to your clipboard! Use ctrl + v. \n\nIf something wrong, your link is: \n\n${backendUrl}api/v1/files/freefile/${data.id}`)
     }
   }
 
