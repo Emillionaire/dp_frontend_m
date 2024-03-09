@@ -7,13 +7,12 @@ import backendUrl from "../../url"
 import { AppDispatch } from '../_rtk/store'
 
 
-export default function FileEditor({data}: IProps) {
-  let [edit, setEdit] = useState(false)
+export default function FileEditor({ data }: IProps) {
+  const [edit, setEdit] = useState(false)
   const dispatch = useDispatch<AppDispatch>()
-  let token = "Bearer " + String(localStorage.getItem('token'))
-  let username = data.owner?.username
-  let created_at  = new Date(data.created_at)
-  let fileUrl = String(data.file)
+  const token = "Bearer " + String(localStorage.getItem('token'))
+  const username = data.owner?.username
+  const created_at = new Date(data.created_at)
   let last_download
   const [form, setForm] = useState<SendChangeForm>({
     description: data.description,
@@ -28,24 +27,14 @@ export default function FileEditor({data}: IProps) {
   }
 
   function handleOpenFile() {
-    let token = "Bearer " + String(localStorage.getItem('token'))
-    fetch(fileUrl, {headers: {"Authorization": token}})
-    .then(response => response.blob())
-    .then(blob => {
-      const downloadUrl = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = downloadUrl;
-      link.download = data.name;
-      link.click();
-
-      URL.revokeObjectURL(downloadUrl);
-    })
-    .catch(() => {
-      alert('File unavialable!')
-  })}
+    const link = document.createElement('a');
+    link.href = `${backendUrl}api/v1/files/freefile/${data.id}`;
+    link.download = data.name;
+    link.click();
+  }
 
   async function handleDeleteFile() {
-    let response = await fetch(`${backendUrl}api/v1/files/delete/${data.id}`, {headers: {"Authorization": token}, method: 'DELETE'})
+    const response = await fetch(`${backendUrl}api/v1/files/delete/${data.id}`, { headers: { "Authorization": token }, method: 'DELETE' })
     dispatch(fetchGet())
     if (!response.ok) {
       alert('Delete file error!')
@@ -53,23 +42,22 @@ export default function FileEditor({data}: IProps) {
   }
 
   async function handleGetShareLink() {
-    console.log(data)
     if (data.free_file === false) {
-        alert('This file not free. For free you must change "free file" button.')
+      alert('This file not free. For free you must change "free file" button.')
     } else {
-        const unsecuredCopyToClipboard = (text: string) => {
-            const textArea = document.createElement("textarea");
-            textArea.value=text;
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            try{document.execCommand('copy')}
-            catch(err){console.error('Unable to copy to clipboard',err)}
-            document.body.removeChild(textArea)};
+      const unsecuredCopyToClipboard = (text: string) => {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try { document.execCommand('copy') }
+        catch (err) { console.error('Unable to copy to clipboard', err) }
+        document.body.removeChild(textArea)
+      };
 
-        unsecuredCopyToClipboard(`${backendUrl}api/v1/files/freefile/${data.id}`)
-        // navigator.clipboard.writeText(`${backendUrl}api/v1/files/freefile/${data.id}`)
-        alert(`Link send to your clipboard! Use ctrl + v. \n\nIf something wrong, your link is: \n\n${backendUrl}api/v1/files/freefile/${data.id}`)
+      unsecuredCopyToClipboard(`${backendUrl}api/v1/download/${data.url}`)
+      alert(`Link send to your clipboard! Use ctrl + v. \n\nIf something wrong, your link is: \n\n${backendUrl}api/v1/download/${data.url}`)
     }
   }
 
@@ -79,34 +67,34 @@ export default function FileEditor({data}: IProps) {
 
   function handleInputChange(element: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = element.target
-    console.log(name, value)
-    
+
     setForm(PrevForm => ({
-        ...PrevForm,
-        [name]: value
-    }))}
+      ...PrevForm,
+      [name]: value
+    }))
+  }
 
   function handleFreeFileChange(element: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = element.target
-    console.log(name, value)
     let avalue = 'false'
     if (value === 'false') {
-        avalue = 'true'
+      avalue = 'true'
     } else {
-        avalue = 'false'
+      avalue = 'false'
     }
 
     setForm(PrevForm => ({
-        ...PrevForm,
-        [name]: avalue
+      ...PrevForm,
+      [name]: avalue
     }))
   }
 
   async function handleSave(_element: BaseSyntheticEvent) {
-    const body = {description: form.description, free_file: form.free_file}
-    // console.log(body)
-    await (await fetch(`${backendUrl}api/v1/files/update/${data.id}/`, {method: 'PATCH', body: JSON.stringify(body),
-    headers: {"Authorization": token, 'Content-Type': 'application/json;charset=utf-8'}})).json()
+    const body = { description: form.description, free_file: form.free_file }
+    await (await fetch(`${backendUrl}api/v1/files/update/${data.id}/`, {
+      method: 'PATCH', body: JSON.stringify(body),
+      headers: { "Authorization": token, 'Content-Type': 'application/json;charset=utf-8' }
+    })).json()
     dispatch(fetchGet())
     setEdit(false)
   }
@@ -114,41 +102,39 @@ export default function FileEditor({data}: IProps) {
 
   const edit_off = (
     <div className="container">
-        <span className="subcontainer"><b>ID:</b><br/>{data.id}</span>
-        <span className="subcontainer"><b>Name:</b><a onClick={handleOpenFile} className="file"><br/>{data.name}</a></span>
-        <span className="subcontainer"><b>Username:</b><br/>{username}</span>
-        <span className="subcontainer"><b>Description:</b><br/>{data.description}</span>
-        <span className="subcontainer"><b>Size:</b><br/>{data.size}</span>
-        <span className="subcontainer"><b>Created at:</b><br/>{`${created_at.getDate()}.${created_at.getMonth() + 1}.${created_at.getFullYear()}`}</span>
-        <span className="subcontainer"><b>Last download:</b><br/>{last_download}</span>
-        <button className="subcontainer" onClick={handleOpenFile}>Download</button>
-        <span className="subcontainer"><b>Free file:</b><br/><input type="checkbox" checked={data.free_file ? 'checked' : undefined} disabled="disabled"/></span>
-        <button className="subcontainer" onClick={handleGetShareLink}>Get free link</button>
-        <button className="subcontainer" onClick={handleEdit}>Edit</button>
-        <button className="subcontainer" onClick={handleDeleteFile}>Delete</button>
+      <span className="subcontainer"><b>ID:</b><br />{data.id}</span>
+      <span className="subcontainer"><b>Name:</b><a onClick={handleOpenFile} className="file"><br />{data.name}</a></span>
+      <span className="subcontainer"><b>Username:</b><br />{username}</span>
+      <span className="subcontainer"><b>Description:</b><br />{data.description}</span>
+      <span className="subcontainer"><b>Size:</b><br />{data.size}</span>
+      <span className="subcontainer"><b>Created at:</b><br />{`${created_at.getDate()}.${created_at.getMonth() + 1}.${created_at.getFullYear()}`}</span>
+      <span className="subcontainer"><b>Last download:</b><br />{last_download}</span>
+      <button className="subcontainer" onClick={handleOpenFile}>Download</button>
+      <span className="subcontainer"><b>Free file:</b><br /><input type="checkbox" checked={data.free_file} disabled /></span>
+      <button className="subcontainer" onClick={handleGetShareLink}>Get free link</button>
+      <button className="subcontainer" onClick={handleEdit}>Edit</button>
+      <button className="subcontainer" onClick={handleDeleteFile}>Delete</button>
     </div>
   )
 
   const edit_on = (
     <div className="container">
-        <span className="subcontainer"><b>ID:</b><br/>{data.id}</span>
-        <span className="subcontainer"><b>Name:</b><a onClick={handleOpenFile} className="file"><br/>{data.name}</a></span>
-        <span className="subcontainer"><b>Username:</b><br/>{username}</span>
-        <span className="subcontainer, editable"><b>Description:</b><br/><input onChange={handleInputChange} type="text" name="description" value={form.description}/></span>
-        <span className="subcontainer"><b>Size:</b><br/>{data.size}</span>
-        <span className="subcontainer"><b>Created at:</b><br/>{`${created_at.getDate()}.${created_at.getMonth() + 1}.${created_at.getFullYear()}`}</span>
-        <span className="subcontainer"><b>Last download:</b><br/>{last_download}</span>
-        <span className="subcontainer, editable"><b>Free file:</b><br/>{data.free_file}<input onChange={handleFreeFileChange} type="checkbox" name="free_file" value={form.free_file} checked={data.free_file ? 'checked' : undefined}/></span>
-        <button className="subcontainer" onClick={handleGetShareLink}>Get free link</button>
-        <button className="subcontainer" onClick={handleEdit}>Cancel</button>
-        <button className="subcontainer" onClick={handleSave}>Save</button>
-        <button className="subcontainer" onClick={handleDeleteFile}>Delete</button>
+      <span className="subcontainer"><b>ID:</b><br />{data.id}</span>
+      <span className="subcontainer"><b>Name:</b><a onClick={handleOpenFile} className="file"><br />{data.name}</a></span>
+      <span className="subcontainer"><b>Username:</b><br />{username}</span>
+      <span className="subcontainer, editable"><b>Description:</b><br /><input onChange={handleInputChange} type="text" name="description" value={form.description} /></span>
+      <span className="subcontainer"><b>Size:</b><br />{data.size}</span>
+      <span className="subcontainer"><b>Created at:</b><br />{`${created_at.getDate()}.${created_at.getMonth() + 1}.${created_at.getFullYear()}`}</span>
+      <span className="subcontainer"><b>Last download:</b><br />{last_download}</span>
+      <span className="subcontainer, editable"><b>Free file:</b><br />{data.free_file}<input onChange={handleFreeFileChange} type="checkbox" name="free_file" value={form.free_file} defaultChecked={data.free_file} /></span>
+      <button className="subcontainer" onClick={handleGetShareLink}>Get free link</button>
+      <button className="subcontainer" onClick={handleEdit}>Cancel</button>
+      <button className="subcontainer" onClick={handleSave}>Save</button>
+      <button className="subcontainer" onClick={handleDeleteFile}>Delete</button>
     </div>
   )
- 
+
   return (
-    <>
-      {edit ? edit_on : edit_off}
-    </>
+    edit ? edit_on : edit_off
   )
-  }
+}

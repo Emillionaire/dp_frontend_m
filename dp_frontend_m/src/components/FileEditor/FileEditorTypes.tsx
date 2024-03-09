@@ -8,6 +8,7 @@ export interface IDescription {
     last_download: string
     file?: string
     free_file: boolean
+    url: string
 }
 
 export interface Owner {

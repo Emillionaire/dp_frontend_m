@@ -1,112 +1,50 @@
-import React, { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import './Cloud.css'
-import FileEditor from '../FileEditor/FileEditor'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { RootState } from "@reduxjs/toolkit/query"
 import { useSelector, useDispatch } from 'react-redux'
-import { fetchGet } from '../_rtk/slices/filesSlice'
-import { jwtDecode } from "jwt-decode";
-import backendUrl from '../../url'
+import { fetchUser } from '../_rtk/slices/userSlice'
+import { JwtPayload, jwtDecode } from "jwt-decode";
 import { AppDispatch } from '../_rtk/store'
+import { Outlet } from 'react-router-dom'
 
 
 
 export default function CloudPage() {
-    let [add, setAdd] = useState(false)
     const navigate = useNavigate();
-    const data = useSelector((state: RootState) => state.files.data)
+    const params = useLocation()
+
+    const user = useSelector((state: RootState) => state.user)
     const dispatch = useDispatch<AppDispatch>()
-    const [file, setFile] = useState('')
-    const [description, setDescription] = useState('')
-    let token = jwtDecode(localStorage.getItem('token') || '')
-    
+
+    const token: JwtPayload & { user_id: number } = jwtDecode(localStorage.getItem('token') || '')
 
     useEffect(() => {
-        dispatch(fetchGet())
-    }, [])
-
-    
-    
-    const listItems = data.map((e: any) => {
-        return (<FileEditor data={e} key={e.id} />)
-    })
+        if (token.user_id) {
+            dispatch(fetchUser(token.user_id))
+        }
+    }, [token.user_id])
 
     function handleLogout() {
         localStorage.clear()
         return navigate("/");
     }
 
-    function handleInputFile(element: React.ChangeEvent<HTMLInputElement>) {
-        const file = element.target.files[0];
-        setFile(file)
-    }
-
-    function handleInputDescription(element: React.ChangeEvent<HTMLInputElement>) {
-        setDescription(element.target.value)}
-
-    async function handleSubmit(element: React.FormEvent<HTMLFormElement>) {
-        element.preventDefault()
-        let token = "Bearer " + String(localStorage.getItem('token'))
-        let myHeaders = new Headers();
-        myHeaders.append("Authorization", token);
-
-        let formdata = new FormData();
-        formdata.append("file_entity", file);
-        formdata.append("description", description);
-
-        let response = await fetch(`${backendUrl}api/v1/files/`, {
-            method: 'POST',
-            headers: myHeaders,
-            body: formdata,
-            redirect: 'follow'
-        })
-        setFile('')
-        setDescription('')
-        setAdd(false)
-        if (response.ok) {
-            dispatch(fetchGet())
-        } else {
-            alert("Data incorrect!");
-        }}
-
-        
-
-    function handleCancel(_element: React.ChangeEvent) {
-        setAdd(false)
-        setDescription('')
-        setFile('')
-    }
-
-    const add_off = (
-        <div className='add_file_block'>
-            <button onClick={() => setAdd(true)}>Add file</button>
-        </div>
-    )
-
-    const add_on = (
-        <div className='add_file_block'>
-             <form onSubmit={handleSubmit}>
-                <input type="file" onChange={handleInputFile}/>
-                <input type="text" onChange={handleInputDescription} id='description' name='description' value={description} placeholder='Описание файла...'/>
-                <button onClick={handleCancel}>Cancel</button>
-                <button>Save file</button>
-            </form>
-        </div>
-    )
-
     return (
-        <>
-            <div className='workspace'>
+        <div className='workspace'>
+            <div>
+                {params.pathname === '/cloud/users' &&
+                    <button onClick={() => navigate('/cloud/files')} className='list-btn'>Files List</button>}
+                {params.pathname === '/cloud/files'
+                    && user.is_staff
+                    && <button onClick={() => navigate('/cloud/users')} className='list-btn'>Users List</button>}
                 <div>
-                    <div>
-                        Your user ID: {token.user_id}<br/>
-                        Your username: {localStorage.getItem('username')}<br/>
-                        <button onClick={handleLogout}>Logout</button>
-                    </div>
-                    {add ? add_on : add_off}
-                    {listItems}
+                    Your user ID: {user.id}<br />
+                    Your username: {user.username}<br />
+                    <button onClick={handleLogout}>Logout</button>
                 </div>
+                <Outlet />
             </div>
-        </>        
+        </div>
     )
-    }
+}

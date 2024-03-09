@@ -33,8 +33,7 @@ const Login = () => {
         if (response.ok) {
             let result = await response.json();
             localStorage.setItem('token', result.access)
-            localStorage.setItem('username', form.username)
-            return navigate("/cloud");
+            return navigate("/cloud/files");
         } else {
             alert("Wrong login/password.");
         }}

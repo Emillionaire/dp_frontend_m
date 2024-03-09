@@ -3,6 +3,11 @@
     border: 1px black solid;
 }
 
+.list-btn {
+    display: flex;
+    align-items: center;
+}
+
 .add_file_block {
     margin-top: 10px;
     display: flex;
